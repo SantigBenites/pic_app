@@ -1,4 +1,10 @@
 #[macro_use] extern crate rocket;
+use std::sync::Mutex;
+
+#[derive(Default)]
+struct Counter {
+    value: Mutex<i64>
+}
 
 #[get("/")]
 fn index() -> &'static str {
@@ -7,22 +13,25 @@ fn index() -> &'static str {
 
 
 #[get("/counter")]
-fn counter() -> int64 {
-    f"Hello {}"
+fn counter(state: &rocket::State<Counter>) -> String {
+    let x = state.value.lock().unwrap();
+    format!("Counter is {}", *x)
 }
 
 
 
 #[get("/counter_add")]
-fn counter_add() -> void{
-    x = x+ 1;
+fn counter_add(state: &rocket::State<Counter>) -> String {
+    let mut x = state.value.lock().unwrap();
+    *x += 1;
+    format!("Counter incremented to {}", *x)
 }
+
 
 
 #[launch]
 fn rocket() -> _ {
-    let mut x = 1
-    rocket::build().mount("/", routes![index])
-                    .mount("/counter", routes![counter])
-                    .mount("/counter_add", routes![counter_add])
+    rocket::build()
+        .manage(Counter { value: Mutex::new(1) })
+        .mount("/", routes![index, counter, counter_add])
 }
