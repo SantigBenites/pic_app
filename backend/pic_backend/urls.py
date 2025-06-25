@@ -16,8 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from . import views 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('pictures/', include("pic_pictures.urls")),
+    path('csrf_token_endpoint/', views.get_csrf_token),
 ]

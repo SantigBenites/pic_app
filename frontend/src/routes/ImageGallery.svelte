@@ -8,7 +8,7 @@
     {#each images as image}
       <div class="image-item">
         <img 
-          src={`http://localhost:8000/api/image/${image}`} 
+          src={`http://localhost:8000/pictures/image_download/${image}`} 
           alt={image}
           on:error={(e) => e.target.style.display = 'none'}
         />
