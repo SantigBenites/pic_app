@@ -1,10 +1,13 @@
 import adapter from '@sveltejs/adapter-auto';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
+/** @type {import('@sveltejs/kit').Config} */
 const config = {
   kit: {
-    files: {
-      routes: 'src/routes' // or your custom directory
+    adapter: adapter(),
+    alias: {
+      $components: './src/components',
+      $pages: './src/pages'
     }
   },
   preprocess: vitePreprocess()

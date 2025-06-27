@@ -1,5 +1,24 @@
 <script>
-  export let images = [];
+  import axios from 'axios';
+  import { onMount } from 'svelte';
+
+  let images = [];
+
+  onMount(async () => {
+    await fetchImages();
+  });
+
+  const fetchImages = async () => {
+    try {
+      const response = await axios.get(
+        'http://localhost:8000/pictures/image_list/',
+        { withCredentials: true }
+      );
+      images = response.data;
+    } catch (error) {
+      console.error('Error fetching images:', error);
+    }
+  };
 </script>
 
 <div class="gallery">

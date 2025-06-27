@@ -1,23 +1,21 @@
 <script>
   import axios from 'axios';
   import { onMount } from 'svelte';
+  import { goto } from '$app/navigation';
 
   let file = null;
   let uploadStatus = '';
-  let images = [];
   let csrfToken = '';
 
-  // Get CSRF token when component mounts
   onMount(async () => {
     await fetchCSRFToken();
-    fetchImages();
   });
 
   const fetchCSRFToken = async () => {
     try {
       const response = await axios.get(
         'http://localhost:8000/csrf_token_endpoint/', 
-        { withCredentials: true }  // Important for cookies
+        { withCredentials: true }
       );
       csrfToken = response.data.csrfToken;
     } catch (error) {
@@ -28,7 +26,7 @@
 
   const handleFileChange = (e) => {
     file = e.target.files[0];
-    uploadStatus = ''; // Clear previous status
+    uploadStatus = '';
   };
 
   const uploadImage = async () => {
@@ -53,27 +51,15 @@
       
       uploadStatus = `Upload successful! File ID: ${response.data.id}`;
       file = null;
-      fetchImages(); // Refresh the image list
+      // Navigate to gallery after successful upload
+      setTimeout(() => goto('/gallery'), 1500);
     } catch (error) {
       if (error.response?.status === 403) {
-        // If CSRF fails, try to get a new token and retry
         await fetchCSRFToken();
         uploadStatus = 'Security token expired. Try uploading again.';
       } else {
         uploadStatus = `Upload failed: ${error.response?.data?.message || error.message}`;
       }
-    }
-  };
-
-  const fetchImages = async () => {
-    try {
-      const response = await axios.get(
-        'http://localhost:8000/pictures/image_download/',
-        { withCredentials: true }
-      );
-      images = response.data;
-    } catch (error) {
-      console.error('Error fetching images:', error);
     }
   };
 </script>
@@ -97,6 +83,7 @@
     border: 1px solid #ccc;
     border-radius: 5px;
     max-width: 500px;
+    margin: 0 auto;
   }
   button {
     margin-top: 10px;
